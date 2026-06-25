@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام CompuManager - م/محمد شبانة</title>
+    <style>
+        /* ===== CUSTOM BRANDING ===== */
+        .login-shop-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary, #2563eb);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .login-manager-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: #fff;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 6px 0 18px;
+        }
+        .login-manager-badge i { font-size: 13px; }
+        .brand-manager {
+            font-size: 12px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 500;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+        .status-bar-credit {
+            font-size: 11.5px;
+            color: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-bar-credit i { font-size: 11px; }
+        .status-bar-credit a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .status-bar-credit a:hover { color: #fff; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=1.6">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="loginPage">
+    <div class="login-box">
+        <div class="login-shop-title"><i class="fas fa-laptop-code"></i> نظام CompuManager</div>
+        <div class="login-manager-badge">
+            <i class="fas fa-user-tie"></i>
+            إدارة / م&sol;محمد شبانة
+        </div>
+        <p style="font-size:13px;color:var(--text-secondary,#64748b);margin-bottom:16px;">تسجيل الدخول إلى النظام</p>
+        <div class="login-error" id="loginError"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="admin@store.com" required>
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- APP CONTAINER -->
+<div class="app-container" id="appContainer" style="display:none">
+    <header class="top-header">
+        <div class="header-left">
+            <div class="app-brand">
+                <i class="fas fa-laptop-code"></i>
+                <span>نظام CompuManager</span>
+                <span class="brand-manager">| إدارة: م&sol;محمد شبانة</span>
+            </div>
+            <button class="sync-btn" onclick="syncData(this)"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div class="header-center">
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="navigate('products')"><i class="fas fa-plus"></i> إضافة منتج</button>
+                <button class="quick-btn" onclick="navigate('sales')"><i class="fas fa-cash-register"></i> نقطة البيع</button>
+                <button class="quick-btn" onclick="navigate('customers')"><i class="fas fa-user-plus"></i> إضافة عميل</button>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تغيير المظهر"><i class="fas fa-moon"></i></button>
+            <span class="user-name" id="userName"></span>
+            <span class="datetime" id="datetime"></span>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <nav class="sidebar">
+            <button class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><i class="fas fa-th-large"></i><span>لوحة التحكم</span></button>
+            <button class="nav-item" onclick="navigate('sales')" data-page="sales"><i class="fas fa-cash-register"></i><span>المبيعات ونقطة البيع</span></button>
+            <button class="nav-item" onclick="navigate('products')" data-page="products"><i class="fas fa-box"></i><span>المنتجات</span></button>
+            <button class="nav-item" onclick="navigate('inventory')" data-page="inventory"><i class="fas fa-clipboard-list"></i><span>المخزون</span></button>
+            <button class="nav-item" onclick="navigate('customers')" data-page="customers"><i class="fas fa-users"></i><span>العملاء</span></button>
+            <button class="nav-item" onclick="navigate('suppliers')" data-page="suppliers"><i class="fas fa-industry"></i><span>الموردين</span></button>
+            <button class="nav-item" onclick="navigate('purchases')" data-page="purchases"><i class="fas fa-shopping-cart"></i><span>المشتريات</span></button>
+            <button class="nav-item" onclick="navigate('repairs')" data-page="repairs"><i class="fas fa-tools"></i><span>الصيانة</span></button>
+            <button class="nav-item" onclick="navigate('expenses')" data-page="expenses"><i class="fas fa-wallet"></i><span>المصروفات</span></button>
+            <div class="nav-divider"></div>
+            <button class="nav-item" onclick="navigate('reports')" data-page="reports"><i class="fas fa-chart-bar"></i><span>التقارير</span></button>
+            <div class="nav-divider"></div>
+            <button class="nav-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span></button>
+        </nav>
+
+        <main class="content-area" id="contentArea">
+            <div class="page active" id="page-dashboard">
+                <div class="page-header"><div class="page-title"><h1>لوحة التحكم</h1><p>نظرة عامة على أداء النظام</p></div></div>
+                <div class="summary-cards" id="dashCards"></div>
+                <div class="charts-row">
+                    <div class="chart-card" id="salesChart">
+                        <div class="chart-header"><h3><i class="fas fa-chart-bar"></i> حركة المبيعات (آخر 30 يوم)</h3></div>
+                        <div id="chartBody"><div class="chart-empty">جاري التحميل...</div></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header"><h3><i class="fas fa-chart-pie"></i> توزيع المبيعات</h3></div>
+                        <div class="distribution">
+                            <div class="dist-item"><span class="dist-label">أجهزة</span><div class="dist-bar-bg"><div class="dist-bar-fill" style="width:45%;background:var(--primary);"></div></div><span class="dist-percent">45%</span></div>
+                            <div class="dist-item"><span class="dist-label">قطع غيار</span><div class="dist-bar-bg"><div class="dist-bar-fill" style="width:25%;background:var(--success);"></div></div><span class="dist-percent">25%</span></div>
+                            <div class="dist-item"><span class="dist-label">إكسسوارات</span><div class="dist-bar-bg"><div class="dist-bar-fill" style="width:20%;background:var(--warning);"></div></div><span class="dist-percent">20%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="page" id="page-sales">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>المبيعات ونقطة البيع</h1>
+                        <p>إدارة فواتير المبيعات ونقطة البيع السريعة</p>
+                    </div>
+                </div>
+                <div class="data-card" style="padding: 0; border: none; background: transparent; box-shadow: none; margin-bottom: 12px;">
+                    <div class="inventory-tabs">
+                        <button class="inventory-tab active" onclick="switchSalesTab('pos', this)"><i class="fas fa-cash-register"></i> نقطة البيع (POS)</button>
+                        <button class="inventory-tab" onclick="switchSalesTab('history', this)"><i class="fas fa-history"></i> سجل الفواتير</button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: POS -->
+                <div class="inventory-tab-content active" id="salesTab-pos">
+                    <div class="pos-container">
+                        <div class="data-card" style="margin-bottom:0;">
+                            <div class="data-card-header">
+                                <h3>عربة المشتريات</h3>
+                                <span style="font-size:12px;color:var(--text-secondary);">فاتورة: <strong id="invoiceNumber">جاري التحميل...</strong></span>
+                            </div>
+                            <div class="table-toolbar" style="flex-wrap: wrap; gap: 8px;">
+                                <div class="search-input-wrapper" style="max-width:100%; flex: 1;">
+                                    <input type="text" placeholder="بحث عن منتج..." onkeyup="filterPOSProducts(this.value)">
+                                    <i class="fas fa-barcode"></i>
+                                </div>
+                                <div style="display:flex; gap:8px; width:100%;">
+                                    <input type="text" list="posPhoneList" placeholder="رقم الهاتف..." id="posCustomerPhone" class="form-control" style="flex:1; height:34px; font-size:13px;" onchange="onPOSPhoneChange(this.value)" onkeyup="onPOSPhoneKeyup(this.value)">
+                                    <datalist id="posPhoneList"></datalist>
+                                    <input type="text" placeholder="اسم العميل..." id="posCustomerName" class="form-control" style="flex:1.2; height:34px; font-size:13px;">
+                                </div>
+                            </div>
+                            <table>
+                                <thead><tr><th>#</th><th>المنتج</th><th>السعر</th><th>الكمية</th><th>الإجمالي</th><th></th></tr></thead>
+                                <tbody id="cartBody"></tbody>
+                            </table>
+                            <div class="cart-summary">
+                                <div style="display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-bottom:8px;">
+                                    <span>الخصم:</span>
+                                    <input type="number" value="0" id="discountInput" onchange="updateTotal()" style="width:100px;height:32px;text-align:center;border:1px solid #ddd;border-radius:4px;">
+                                    <span>جنيه</span>
+                                </div>
+                                <hr style="margin:12px 0;border-color:#eee;">
+                                <div class="cart-total" style="display:none">الإجمالي: <span id="totalAmount">0</span> جنيه</div>
+                                <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;display:none">الضريبة: <span id="taxAmount">0</span> جنيه</div>
+                                <div style="font-size:18px;font-weight:bold;color:var(--success);margin-top:4px;">إجمالي المطلوب: <span id="netAmount">0</span> جنيه</div>
+                            </div>
+                        </div>
+                        <div class="data-card" style="margin-bottom:0;">
+                            <div class="data-card-header"><h3>اختيار المنتجات</h3></div>
+                            <div class="product-grid" id="productGrid"></div>
+                            <div class="payment-btns" style="margin-top: 12px;">
+                                <button class="btn btn-success btn-lg" style="width:100%;" onclick="showPaymentModal()">
+                                    <i class="fas fa-check-circle"></i> إتمام البيع
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: HISTORY -->
+                <div class="inventory-tab-content" id="salesTab-history">
+                    <div class="data-card">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrapper" style="max-width:300px;">
+                                <input type="text" placeholder="بحث برقم الفاتورة أو العميل..." id="salesSearch" oninput="filterSalesHistory(this.value)">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>العميل</th>
+                                    <th>التاريخ</th>
+                                    <th>الإجمالي</th>
+                                    <th>المدفوع</th>
+                                    <th>الحالة</th>
+                                    <th>العمليات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+<div class="page" id="page-products">
+                <div class="page-header"><div class="page-title"><h1>إدارة المنتجات</h1><p id="productsCount">جاري التحميل...</p></div><button class="btn btn-primary" onclick="showProductModal()"><i class="fas fa-plus"></i> إضافة منتج</button></div>
+                <div class="data-card">
+                    <div class="table-toolbar">
+                        <div class="search-input-wrapper"><input type="text" placeholder="بحث..." id="prodSearch" oninput="debounceSearch('products')"><i class="fas fa-search"></i></div>
+                        <select class="filter-select" id="prodCategoryFilter" onchange="filterProducts()" style="max-width:160px"><option value="">كل التصنيفات</option></select>
+                        <select class="filter-select" id="prodStatusFilter" onchange="filterProducts()" style="max-width:120px"><option value="">كل الحالات</option><option value="1">نشط</option><option value="0">غير نشط</option></select>
+                        <span id="prodPagination" style="font-size:13px;color:var(--gray);white-space:nowrap"></span>
+                    </div>
+                    <table><thead><tr><th>SKU</th><th>اسم المنتج</th><th>التصنيف</th><th>سعر البيع</th><th>المخزون</th><th>الحالة</th><th></th></tr></thead>
+                    <tbody id="productsBody"></tbody></table>
+                    <div class="pagination-bar" id="prodPageNav" style="display:flex;justify-content:center;gap:8px;margin-top:12px"></div>
+                </div>
+            </div>
+
+            <div class="page" id="page-inventory">
+                <div class="page-header"><div class="page-title"><h1>المخزون</h1></div><button class="btn btn-info" onclick="showAdjustModal()"><i class="fas fa-adjust"></i> تسوية مخزون</button></div>
+                <div class="data-card">
+                    <div class="inventory-tabs">
+                        <button class="inventory-tab active" onclick="switchInventoryTab('stock', this)"><i class="fas fa-boxes"></i> المخزون الحالي</button>
+                        <button class="inventory-tab" onclick="switchInventoryTab('movements', this)"><i class="fas fa-history"></i> حركة المخزون</button>
+                    </div>
+                    <div class="inventory-tab-content active" id="invTab-stock">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrapper"><input type="text" placeholder="بحث..." onkeyup="filterTable('inventory')"><i class="fas fa-search"></i></div>
+                            <label><input type="checkbox" onchange="toggleLowStock(this)"> مخزون منخفض فقط</label>
+                        </div>
+                        <table><thead><tr><th class="sortable" data-sort="product">المنتج</th><th class="sortable" data-sort="sku">SKU</th><th class="sortable" data-sort="warehouse">المستودع</th><th class="sortable" data-sort="qty">الكمية</th><th class="sortable" data-sort="available">المتاح</th><th class="sortable" data-sort="min">الحد الأدنى</th><th></th></tr></thead>
+                        <tbody id="inventoryBody"></tbody></table>
+                    </div>
+                    <div class="inventory-tab-content" id="invTab-movements">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrapper" style="max-width:100%;"><input type="text" placeholder="بحث في حركة المخزون..." onkeyup="filterStockMovements(this.value)"><i class="fas fa-search"></i></div>
+                        </div>
+                        <table><thead><tr><th>التاريخ</th><th>المنتج</th><th>النوع</th><th>الكمية</th><th>المرجع</th><th>بواسطة</th></tr></thead>
+                        <tbody id="stockMovementsBody"></tbody></table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="page-customers">
+                <div class="page-header"><div class="page-title"><h1>العملاء</h1></div><button class="btn btn-primary" onclick="showCustomerModal()"><i class="fas fa-user-plus"></i> إضافة عميل</button></div>
+                <div class="data-card">
+                    <div class="table-toolbar"><div class="search-input-wrapper"><input type="text" placeholder="بحث..." onkeyup="filterTable('customers')"><i class="fas fa-search"></i></div></div>
+                    <table><thead><tr><th>الكود</th><th>الاسم</th><th>الهاتف</th><th>المشتريات</th><th></th></tr></thead>
+                    <tbody id="customersBody"></tbody></table>
+                </div>
+            </div>
+
+            <div class="page" id="page-suppliers">
+                <div class="page-header"><div class="page-title"><h1>الموردين</h1></div><button class="btn btn-primary" onclick="showSupplierModal()"><i class="fas fa-plus"></i> إضافة مورد</button></div>
+                <div class="data-card">
+                    <div class="table-toolbar"><div class="search-input-wrapper"><input type="text" placeholder="بحث..." onkeyup="filterTable('suppliers')"><i class="fas fa-search"></i></div></div>
+                    <table><thead><tr><th>الكود</th><th>الشركة</th><th>جهة الاتصال</th><th>الهاتف</th><th>إجمالي المشتريات</th><th></th></tr></thead>
+                    <tbody id="suppliersBody"></tbody></table>
+                </div>
+            </div>
+
+            <div class="page" id="page-purchases">
+                <div class="page-header"><div class="page-title"><h1>المشتريات</h1></div><button class="btn btn-primary" onclick="showPurchaseModal()"><i class="fas fa-plus"></i> أمر شراء جديد</button></div>
+                <div class="data-card">
+                    <table><thead><tr><th>الرقم</th><th>المورد</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+                    <tbody id="purchasesBody"></tbody></table>
+                </div>
+            </div>
+
+            <div class="page" id="page-repairs">
+                <div class="page-header"><div class="page-title"><h1>الصيانة</h1></div><button class="btn btn-primary" onclick="showRepairModal()"><i class="fas fa-plus"></i> طلب صيانة جديد</button></div>
+                <div class="data-card">
+                    <table><thead><tr><th>الرقم</th><th>العميل</th><th>الجهاز</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+                    <tbody id="repairsBody"></tbody></table>
+                </div>
+            </div>
+
+            <!-- DEDICATED EXPENSES PAGE -->
+            <div class="page" id="page-expenses">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>المصروفات</h1>
+                        <p>تسجيل وإدارة المصروفات اليومية للنظام</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddExpenseModal()"><i class="fas fa-plus"></i> إضافة مصروف جديد</button>
+                </div>
+                <div class="data-card">
+                    <div class="data-card-header"><h3>سجل المصاريف اليومية</h3></div>
+                    <table style="margin-top:12px">
+                        <thead>
+                            <tr>
+                                <th>رقم العملية</th>
+                                <th>البيان / المصروف</th>
+                                <th>المبلغ</th>
+                                <th>التاريخ</th>
+                                <th>بواسطة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="page-reports">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>التقارير والحسابات</h1>
+                        <p>إدارة التقارير المالية والمصروفات اليومية</p>
+                    </div>
+                </div>
+                <div class="data-card" style="padding: 0; border: none; background: transparent; box-shadow: none; margin-bottom: 12px;">
+                    <div class="inventory-tabs">
+                        <button class="inventory-tab active" onclick="switchReportsTab('dashboard', this)"><i class="fas fa-chart-bar"></i> الملخص المالي</button>
+                        <button class="inventory-tab" onclick="switchReportsTab('expenses', this)"><i class="fas fa-wallet"></i> المصاريف</button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: DASHBOARD -->
+                <div class="inventory-tab-content active" id="reportsTab-dashboard">
+                    <div class="summary-cards" id="reportCards"></div>
+                    <div class="data-card">
+                        <div class="data-card-header"><h3>حركة المبيعات اليومية</h3></div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>عدد الفواتير</th>
+                                    <th>الإجمالي</th>
+                                    <th>المدفوع</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportSalesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: EXPENSES -->
+                <div class="inventory-tab-content" id="reportsTab-expenses">
+                    <div class="data-card">
+                        <div class="data-card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+                            <h3>سجل المصاريف اليومية</h3>
+                            <button class="btn btn-primary" onclick="showAddExpenseModal()"><i class="fas fa-plus"></i> إضافة مصروف جديد</button>
+                        </div>
+                        <table style="margin-top:12px">
+                            <thead>
+                                <tr>
+                                    <th>رقم العملية</th>
+                                    <th>البيان / المصروف</th>
+                                    <th>المبلغ</th>
+                                    <th>التاريخ</th>
+                                    <th>بواسطة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="status-bar">
+        <span><span class="status-dot"></span> النظام يعمل | <span id="statusUser"></span></span>
+        <span class="status-bar-credit">
+            <i class="fas fa-code"></i>
+            إعداد:
+            <a href="tel:01022234967" title="تواصل مع المطور">م&sol;مازن عبد الغفار قنديل</a>
+            &mdash;
+            <i class="fas fa-phone-alt"></i>
+            <a href="tel:01022234967">01022234967</a>
+        </span>
+        <span id="statusTime"></span>
+    </footer>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">عنوان</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/app.js?v=1.6"></script>
+</body>
+</html>
