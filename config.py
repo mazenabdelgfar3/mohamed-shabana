@@ -8,7 +8,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
     # SQLite fallback (not used when Supabase is configured)
-    DATABASE_PATH = os.path.join(BASE_DIR, os.getenv('DATABASE_PATH', 'database/erp.db'))
+    if os.getenv('VERCEL'):
+        DATABASE_PATH = '/tmp/erp.db'
+    else:
+        DATABASE_PATH = os.path.join(BASE_DIR, os.getenv('DATABASE_PATH', 'database/erp.db'))
     DEBUG = os.getenv('FLASK_DEBUG', '0') == '1'
     PORT = int(os.getenv('FLASK_PORT', 5000))
 
